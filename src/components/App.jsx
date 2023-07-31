@@ -52,6 +52,15 @@ function App() {
     setTodos(todos.filter(todo => todo.id !== todoId));
   }
 
+  function toggleTodo(todoId) {
+    setTodos(todos.map(todo => {
+      if (todo.id === todoId) {
+        todo.isCompleted = ! todo.isCompleted;
+      }
+      return todo;
+    }));
+  }
+
   return (
     <div className="todo-app-container">
       <div className="todo-app">
@@ -70,8 +79,8 @@ function App() {
           {todos.map((todo, index) => (
             <li key={todo.id} className="todo-item-container">
               <div className="todo-item">
-                <input type="checkbox" />
-                <span className="todo-item-label">{todo.title}</span>
+                <input type="checkbox"  onClick={ () => {toggleTodo(todo.id)} }/>
+                <span className={`todo-item-label ${todo.isCompleted ? 'line-through' : ''}`}>{todo.title}</span>
                 {/* <input type="text" className="todo-item-input" value="Do other thing /> */}
               </div>
               <button onClick={ () => {deleteTodo(todo.id)} } className="x-button">
