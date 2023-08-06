@@ -12,7 +12,7 @@ function App() {
     {
       id: 2,
       title: 'Go to Grocery',
-      isCompleted: false,
+      isCompleted: true,
     },
     {
       id: 3,
@@ -79,7 +79,7 @@ function App() {
           {todos.map((todo, index) => (
             <li key={todo.id} className="todo-item-container">
               <div className="todo-item">
-                <input type="checkbox"  onClick={ () => {toggleTodo(todo.id)} }/>
+                <input type="checkbox"  onClick={ () => {toggleTodo(todo.id)} } checked={todo.isCompleted ? true : false}/>
                 <span className={`todo-item-label ${todo.isCompleted ? 'line-through' : ''}`}>{todo.title}</span>
                 {/* <input type="text" className="todo-item-input" value="Do other thing /> */}
               </div>
