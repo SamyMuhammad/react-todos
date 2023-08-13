@@ -1,4 +1,8 @@
 import PropTypes from 'prop-types';
+import ItemsRemaining from './ItemsRemaining';
+import ClearCompleted from './ClearCompleted';
+import CheckAll from './CheckAll';
+import TodosListFilters from './TodosListFilters';
 
 function TodoList(props) {
   function deleteTodo(todoId) {
@@ -46,10 +50,24 @@ function TodoList(props) {
     });
     props.setTodos(newTodos);
   }
+
+  function clearCompleted() {
+    props.setTodos(props.todos.filter(todo => !todo.isCompleted));
+  }
+
+  function completeAll() {
+    props.setTodos(
+      props.todos.map(todo => {
+        todo.isCompleted = true;
+        return todo;
+      })
+    );
+  }
+
   return (
     <>
       <ul className="todo-list">
-        {props.todos.map((todo, index) => (
+        {props.filteredTodos().map((todo, index) => (
           <li key={todo.id} className="todo-item-container">
             <div className="todo-item">
               {todo.isBeingEdited ? (
@@ -113,22 +131,16 @@ function TodoList(props) {
 
       <div className="check-all-container">
         <div>
-          <div className="button">Check All</div>
+          <CheckAll completeAll={completeAll} />
         </div>
 
-        <span>3 items remaining</span>
+        <ItemsRemaining todos={props.todos} />
       </div>
 
       <div className="other-buttons-container">
+        <TodosListFilters todosFilter={props.todosFilter} setTodosFilter={props.setTodosFilter}/>
         <div>
-          <button className="button filter-button filter-button-active">
-            All
-          </button>
-          <button className="button filter-button">Active</button>
-          <button className="button filter-button">Completed</button>
-        </div>
-        <div>
-          <button className="button">Clear completed</button>
+          <ClearCompleted clearCompleted={clearCompleted} />
         </div>
       </div>
     </>
@@ -136,8 +148,11 @@ function TodoList(props) {
 }
 
 TodoList.propTypes = {
+  filteredTodos: PropTypes.func.isRequired,
   todos: PropTypes.array.isRequired,
   setTodos: PropTypes.func.isRequired,
+  todosFilter: PropTypes.string.isRequired,
+  setTodosFilter: PropTypes.func.isRequired,
 };
 
 export default TodoList;

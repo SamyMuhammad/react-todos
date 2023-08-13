@@ -27,6 +27,8 @@ function App() {
     },
   ]);
 
+  const [todosFilter, setTodosFilter] = useState('all');
+
   const [todoId, setTodoId] = useState(4);
 
   function addTodo(todoTitle) {
@@ -43,12 +45,32 @@ function App() {
     setTodoId(prevId => prevId + 1);
   }
 
+  function filteredTodos() {
+    switch (todosFilter) {
+      case 'all':
+        return todos;
+
+      case 'active':
+        return todos.filter(todo => !todo.isCompleted);
+
+      case 'completed':
+        return todos.filter(todo => todo.isCompleted);
+
+      default:
+        return todos;
+    }
+  }
+
   return (
     <div className="todo-app-container">
       <div className="todo-app">
         <h2>Todo App</h2>
         <TodoForm addTodo={addTodo} />
-        {todos.length ? <TodoList todos={todos} setTodos={setTodos} /> : <NoTodos />}
+        {todos.length ? (
+          <TodoList todos={todos} setTodos={setTodos} todosFilter={todosFilter} setTodosFilter={setTodosFilter} filteredTodos={filteredTodos}/>
+        ) : (
+          <NoTodos />
+        )}
       </div>
     </div>
   );
