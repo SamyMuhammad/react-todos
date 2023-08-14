@@ -4,6 +4,7 @@ import CheckAll from './CheckAll';
 import TodosListFilters from './TodosListFilters';
 import { useContext, useState } from 'react';
 import { TodosContext } from '../context/TodosContext';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 function TodoList() {
   const { todos, setTodos } = useContext(TodosContext);
@@ -70,68 +71,74 @@ function TodoList() {
 
   return (
     <>
-      <ul className="todo-list">
+      <TransitionGroup component="ul" className="todo-list">
         {filteredTodos().map((todo, index) => (
-          <li key={todo.id} className="todo-item-container">
-            <div className="todo-item">
-              {todo.isBeingEdited ? (
-                <input
-                  type="text"
-                  className="todo-item-input"
-                  autoFocus
-                  defaultValue={todo.title}
-                  onBlur={event => updateTodo(event, todo.id)}
-                  onKeyDown={event => {
-                    if (event.key === 'Enter') {
-                      updateTodo(event, todo.id);
-                    } else if (event.key === 'Escape') {
-                      cancelEditing(todo.id);
-                    }
-                  }}
-                />
-              ) : (
-                <span>
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="slide-horizontal"
+          >
+            <li className="todo-item-container">
+              <div className="todo-item">
+                {todo.isBeingEdited ? (
                   <input
-                    type="checkbox"
-                    onChange={() => {
-                      toggleTodo(todo.id);
+                    type="text"
+                    className="todo-item-input"
+                    autoFocus
+                    defaultValue={todo.title}
+                    onBlur={event => updateTodo(event, todo.id)}
+                    onKeyDown={event => {
+                      if (event.key === 'Enter') {
+                        updateTodo(event, todo.id);
+                      } else if (event.key === 'Escape') {
+                        cancelEditing(todo.id);
+                      }
                     }}
-                    checked={todo.isCompleted}
                   />
-                  <span
-                    className={`todo-item-label ${
-                      todo.isCompleted ? 'line-through' : ''
-                    }`}
-                    onDoubleClick={() => markAsBeingEdited(todo.id)}
-                  >
-                    {todo.title}
+                ) : (
+                  <span>
+                    <input
+                      type="checkbox"
+                      onChange={() => {
+                        toggleTodo(todo.id);
+                      }}
+                      checked={todo.isCompleted}
+                    />
+                    <span
+                      className={`todo-item-label ${
+                        todo.isCompleted ? 'line-through' : ''
+                      }`}
+                      onDoubleClick={() => markAsBeingEdited(todo.id)}
+                    >
+                      {todo.title}
+                    </span>
                   </span>
-                </span>
-              )}
-            </div>
-            <button
-              onClick={() => {
-                deleteTodo(todo.id);
-              }}
-              className="x-button"
-            >
-              <svg
-                className="x-button-icon"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  deleteTodo(todo.id);
+                }}
+                className="x-button"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </li>
+                <svg
+                  className="x-button-icon"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </li>
+          </CSSTransition>
         ))}
-      </ul>
+      </TransitionGroup>
 
       <div className="check-all-container">
         <div>
