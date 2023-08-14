@@ -1,15 +1,11 @@
-import PropTypes from 'prop-types';
+import { useMemo, useContext } from 'react';
+import { TodosContext } from '../context/TodosContext';
 
-ItemsRemaining.propTypes = {
-  todos: PropTypes.array.isRequired,
-};
+function ItemsRemaining() {
+  const {todos} = useContext(TodosContext);
+  const remainingTodosCount = useMemo(() => todos.filter(todo => !todo.isCompleted).length, [todos]);
 
-function ItemsRemaining(props) {
-
-  const remainingCount = () =>
-    props.todos.filter(todo => !todo.isCompleted).length;
-
-  return <span>{remainingCount()} items remaining</span>;
+  return <span>{remainingTodosCount} items remaining</span>;
 }
 
 export default ItemsRemaining;

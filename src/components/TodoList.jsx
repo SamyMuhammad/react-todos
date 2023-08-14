@@ -1,17 +1,21 @@
-import PropTypes from 'prop-types';
 import ItemsRemaining from './ItemsRemaining';
 import ClearCompleted from './ClearCompleted';
 import CheckAll from './CheckAll';
 import TodosListFilters from './TodosListFilters';
+import { useContext, useState } from 'react';
+import { TodosContext } from '../context/TodosContext';
 
-function TodoList(props) {
+function TodoList() {
+  const { todos, setTodos } = useContext(TodosContext);
+  const [todosFilter, setTodosFilter] = useState('all');
+
   function deleteTodo(todoId) {
-    props.setTodos(props.todos.filter(todo => todo.id !== todoId));
+    setTodos(todos.filter(todo => todo.id !== todoId));
   }
 
   function toggleTodo(todoId) {
-    props.setTodos(
-      props.todos.map(todo => {
+    setTodos(
+      todos.map(todo => {
         if (todo.id === todoId) {
           todo.isCompleted = !todo.isCompleted;
         }
@@ -21,8 +25,8 @@ function TodoList(props) {
   }
 
   function markAsBeingEdited(todoId) {
-    props.setTodos(
-      props.todos.map(todo => {
+    setTodos(
+      todos.map(todo => {
         todo.isBeingEdited = todo.id === todoId;
         return todo;
       })
@@ -31,43 +35,43 @@ function TodoList(props) {
 
   function updateTodo(event, todoId) {
     const newTitle = event.target.value;
-    const newTodos = props.todos.map(todo => {
+    const newTodos = todos.map(todo => {
       if (todo.id === todoId && newTitle.trim().length) {
         todo.title = newTitle;
       }
       todo.isBeingEdited = false;
       return todo;
     });
-    props.setTodos(newTodos);
+    setTodos(newTodos);
   }
 
   function cancelEditing(todoId) {
-    const newTodos = props.todos.map(todo => {
+    const newTodos = todos.map(todo => {
       if (todo.id === todoId) {
         todo.isBeingEdited = false;
       }
       return todo;
     });
-    props.setTodos(newTodos);
+    setTodos(newTodos);
   }
 
-  function clearCompleted() {
-    props.setTodos(props.todos.filter(todo => !todo.isCompleted));
-  }
+  function filteredTodos() {
+    switch (todosFilter) {
+      case 'active':
+        return todos.filter(todo => !todo.isCompleted);
 
-  function completeAll() {
-    props.setTodos(
-      props.todos.map(todo => {
-        todo.isCompleted = true;
-        return todo;
-      })
-    );
+      case 'completed':
+        return todos.filter(todo => todo.isCompleted);
+
+      default:
+        return todos;
+    }
   }
 
   return (
     <>
       <ul className="todo-list">
-        {props.filteredTodos().map((todo, index) => (
+        {filteredTodos().map((todo, index) => (
           <li key={todo.id} className="todo-item-container">
             <div className="todo-item">
               {todo.isBeingEdited ? (
@@ -131,28 +135,22 @@ function TodoList(props) {
 
       <div className="check-all-container">
         <div>
-          <CheckAll completeAll={completeAll} />
+          <CheckAll />
         </div>
-
-        <ItemsRemaining todos={props.todos} />
+        <ItemsRemaining />
       </div>
 
       <div className="other-buttons-container">
-        <TodosListFilters todosFilter={props.todosFilter} setTodosFilter={props.setTodosFilter}/>
+        <TodosListFilters
+          todosFilter={todosFilter}
+          setTodosFilter={setTodosFilter}
+        />
         <div>
-          <ClearCompleted clearCompleted={clearCompleted} />
+          <ClearCompleted />
         </div>
       </div>
     </>
   );
 }
-
-TodoList.propTypes = {
-  filteredTodos: PropTypes.func.isRequired,
-  todos: PropTypes.array.isRequired,
-  setTodos: PropTypes.func.isRequired,
-  todosFilter: PropTypes.string.isRequired,
-  setTodosFilter: PropTypes.func.isRequired,
-};
 
 export default TodoList;
